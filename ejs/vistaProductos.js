@@ -8,17 +8,17 @@ router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
 router.get("/productos", (req, res) => {
-  res.render("vista", { productos: productos.getProductos() });
+  res.render("pages/vista", { productos: productos.getProductos() });
 });
 
 router.post("/productos", (req, res) => {
   const nuevoProducto = req.body;
   const nuevoId = productos.postProducto(nuevoProducto);
-  res.render("form");
+  res.render("pages/form");
 });
 
 router.get("/", (req, res) => {
-  res.render("form");
+  res.render("pages/form");
 });
 
 module.exports = router;

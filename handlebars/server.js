@@ -1,6 +1,3 @@
-const Productos = require("./productos");
-const productos = require('./listaDeProductos')
-
 const express = require("express");
 const routerApiProductos = require("./apiProductos");
 const routerVistaProductos = require("./vistaProductos");
@@ -20,7 +17,6 @@ app.engine(
 
 app.set("view engine", "hbs");
 app.set("views", "./views");
-//app.use(express.static(__dirname + "/public"));
 
 //-----------------------------------------------------------------------------
 const PORT = 8080;

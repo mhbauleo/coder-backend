@@ -1,18 +1,13 @@
-const Productos = require("./productos");
-const productos = require('./listaDeProductos')
-
 const express = require("express");
 const routerApiProductos = require("./apiProductos");
 const routerVistaProductos = require("./vistaProductos");
 const app = express();
-const handlebars = require("express-handlebars");
 
 app.use("/api/productos", routerApiProductos);
 app.use("/", routerVistaProductos);
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
-//app.use(express.static(__dirname + "/public"));
 
 //-----------------------------------------------------------------------------
 const PORT = 8080;

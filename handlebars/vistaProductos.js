@@ -8,7 +8,10 @@ router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
 router.get("/productos", (req, res) => {
-  res.render("layouts/vista", { productos: productos.getProductos() });
+  res.render("layouts/vista", {
+    productos: productos.getProductos(),
+    hayProductos: productos.getProductos().length != 0,
+  });
 });
 
 router.post("/productos", (req, res) => {
