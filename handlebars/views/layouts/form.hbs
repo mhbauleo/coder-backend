@@ -1,9 +1,9 @@
 <div class="container mt-3">
-  <div class="jumbotron">
+  <div class="jumbotron contenedor productos">
     <h1 style="color: blue">Ingrese productos</h1>
     <br />
 
-    <form action="/productos" method="post">
+    <form onsubmit="return agregarProducto(this)">
       <div class="form-group">
         <label for="title"><b>Title</b></label>
         <input id="title" class="form-control" type="text" name="title" />
@@ -21,6 +21,23 @@
 
       <button class="btn btn-success mt-3 mb-5">Enviar</button>
     </form>
+
+    <h2>Lista de productos</h2>
+    <div class="table-responsive">
+      <table id="vistaProductos" class="table table-dark"></table>
+    </div>
   </div>
-  <a href="./productos">Vista</a>
+
+  <div class="jumbotron contenedor mensajes">
+    <h2>Centro de mensajes</h2>
+      <div id="mensajes"></div>
+      <form onsubmit="return agregarMensaje(this)">
+        <input type="email" id="email" placeholder="diego@outlook.com" required />
+        <input type="text" id="texto" placeholder="Ingrese un mensaje..." />
+        <input type="submit" value="Enviar" />
+      </form>
+  </div>
 </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/main.js"></script>

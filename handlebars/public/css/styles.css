@@ -1,0 +1,26 @@
+.fecha {
+    color: brown;
+}
+
+.email {
+    font-weight: bold;
+    color: blue;
+}
+
+.mensaje {
+    color: green;
+    font-style: italic;
+}
+
+.contenedor {
+    background-color: rgb(227, 230, 230);
+}
+
+.productos {
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.mensajes {
+    padding: 20px;
+}
