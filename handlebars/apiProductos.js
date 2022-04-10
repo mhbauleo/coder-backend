@@ -7,12 +7,12 @@ const router = express.Router();
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-router.get("/", (req, res) => {
-  res.json(productos.getProductos());
+router.get("/", async (req, res) => {
+  res.json(await productos.getProductos());
 });
 
-router.get("/:id", (req, res) => {
-  const producto = productos.getProductoById(Number(req.params.id));
+router.get("/:id", async (req, res) => {
+  const producto = await productos.getProductoById(Number(req.params.id));
   if (producto != null) {
     res.json(producto);
   } else {
@@ -20,9 +20,9 @@ router.get("/:id", (req, res) => {
   }
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const nuevoProducto = req.body;
-  const nuevoId = productos.postProducto(nuevoProducto);
+  const nuevoId = await productos.postProducto(nuevoProducto);
 
   if (nuevoId != 0) {
     res.json({ nuevoProducto, nuevoId });
@@ -31,18 +31,18 @@ router.post("/", (req, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const nuevoProducto = req.body;
 
-  if (productos.putProducto(nuevoProducto, Number(req.params.id))) {
+  if (await productos.putProducto(nuevoProducto, Number(req.params.id))) {
     res.json({ mensaje: "Actualizado con éxito" });
   } else {
     res.json({ error: "No se pudo actualizar" });
   }
 });
 
-router.delete("/:id", (req, res) => {
-  if (productos.deleteProducto(Number(req.params.id))) {
+router.delete("/:id", async (req, res) => {
+  if (await productos.deleteProducto(Number(req.params.id))) {
     res.json({ mensaje: "Borrado con éxito" });
   } else {
     res.json({ error: "Producto no encontrado" });

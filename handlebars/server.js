@@ -38,7 +38,9 @@ const contenedorMensajes = new Contenedor(ARCHIVO);
 io.on("connection", (socket) => {
   console.log("Nuevo cliente conectado!");
 
-  socket.emit("productos", productos.getProductos());
+  (async function () {
+    socket.emit("productos", await productos.getProductos());
+  })();
 
   (async function () {
     const mensajes = await contenedorMensajes.getAll();
@@ -54,8 +56,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("productos", (data) => {
-    productos.postProducto(data);
-    io.sockets.emit("productos", productos.getProductos());
+    (async function () {
+      await productos.postProducto(data);
+      io.sockets.emit("productos", await productos.getProductos());
+    })();
   });
 });
 

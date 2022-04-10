@@ -1,57 +1,39 @@
+const ContenedorBD = require("./contenedorBD")
+
 class Productos {
-  constructor() {
-    this.productos = [];
+  constructor(options) {
+    this.contenedor = new ContenedorBD(options, 'productos');
   }
 
-  getProductos() {
-    return this.productos.filter((producto) => producto != null);
+  async getProductos() {
+    return await this.contenedor.getAll()
   }
 
   // Devuelve null en caso de no encontrar el producto
-  getProductoById(id) {
-    if (this.esIdValido(id)) {
-      return this.productos[id - 1];
-    } else {
-      return null;
-    }
+  async getProductoById(id) {
+    return await this.contenedor.getById(id)
   }
 
   // Devuelve 0 si el producto es inválido
-  postProducto(producto) {
+  async postProducto(producto) {
     if (this.esProductoValido(producto)) {
-      const nuevoId = this.productos.length + 1;
-      this.productos = [...this.productos, { ...producto, id: nuevoId }];
-      return nuevoId;
+      return await this.contenedor.save(producto)
     } else {
       return 0;
     }
   }
 
   // Devuelve true si la actualización se realizó correctamente
-  putProducto(producto, id) {
-    if (this.esIdValido(id) && this.esProductoValido(producto)) {
-      this.productos[id - 1] = { ...producto, id: id };
-      return true;
-    } else {
-      return false;
-    }
+  async putProducto(producto, id) {
+    return this.esProductoValido(producto) && await this.contenedor.updateById(producto, id) != 0
   }
 
   // Devuelve true si se borró correctamente
-  deleteProducto(id) {
-    if (this.esIdValido(id)) {
-      this.productos.splice(id - 1, 1, null);
-      return true;
-    } else {
-      return false;
-    }
+  async deleteProducto(id) {
+    return await this.contenedor.deleteById(id) != 0
   }
 
   // Auxiliares
-
-  esIdValido(id) {
-    return !isNaN(id) && 1 <= id && id <= this.productos.length;
-  }
 
   esProductoValido(producto) {
     return (
