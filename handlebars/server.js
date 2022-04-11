@@ -5,7 +5,8 @@ const { Server: IOServer } = require("socket.io");
 const routerApiProductos = require("./apiProductos");
 const routerVistaProductos = require("./vistaProductos");
 const productos = require("./listaDeProductos");
-const Contenedor = require("./contenedor");
+const ContenedorBD = require("./contenedorBD");
+const {optionsMariaDB} = require('./scripts/options/mariaDB.js')
 
 const app = express();
 const httpServer = new HttpServer(app);
@@ -30,8 +31,13 @@ app.set("views", "./views");
 
 // Mensajes
 
-const ARCHIVO = "./mensajes.txt";
-const contenedorMensajes = new Contenedor(ARCHIVO);
+const contenedorMensajes = new ContenedorBD({
+  client: "sqlite3",
+  connection: {
+    filename: "./DB/ecommerce.sqlite",
+  },
+  useNullAsDefault: true,
+}, 'mensajes');
 
 // Sockets
 

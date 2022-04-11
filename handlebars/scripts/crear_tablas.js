@@ -1,17 +1,34 @@
 const {optionsMariaDB} = require('./options/mariaDB.js')
-const knex = require('knex')(optionsMariaDB)
+const {optionsSQLite3} = require('./options/SQLite3.js')
+const knexMariaDB = require('knex')(optionsMariaDB)
+const knexSQ = require('knex')(optionsSQLite3)
 
-knex.schema.createTable('productos', table => {
+knexMariaDB.schema.createTable('productos', table => {
     table.increments('id')
     table.string('title')
     table.integer('price')
     table.string('thumbnail')
 })
-.then(() => console.log('table created'))
+.then(() => console.log('MariaDB table created'))
 .catch((err) => { 
     console.log(err)
     throw err
 })
 .finally(() => {
-    knex.destroy()
+    knexMariaDB.destroy()
+})
+
+knexSQ.schema.createTable('mensajes', table => {
+    table.increments('id')
+    table.string('email')
+    table.string('text')
+    table.string('fecha')
+})
+.then(() => console.log('Sqlite table created'))
+.catch((err) => { 
+    console.log(err)
+    throw err
+})
+.finally(() => {
+    knexSQ.destroy()
 })
