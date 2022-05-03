@@ -4,18 +4,33 @@ const { Server: IOServer } = require("socket.io");
 
 const routerApiProductos = require("./apiProductos");
 const routerVistaProductos = require("./vistaProductos");
+const routerVistaProductosTest = require("./productosTest");
+
 const productos = require("./listaDeProductos");
-const ContenedorBD = require("./contenedorBD");
-const {optionsMariaDB} = require('./scripts/options/mariaDB.js')
+const ContenedorArchivo = require("./ContenedorArchivo");
+const { optionsMariaDB } = require("./scripts/options/mariaDB.js");
 
 const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
+//------------------------------------- Normalizr -------------------------------------------------
+const { normalize, schema, denormalize } = require("normalizr");
+
+const author = new schema.Entity("author", { idAttribute: "email" });
+const msg = new schema.Entity("msg", {
+  author: author,
+});
+const msgs = new schema.Entity("msgs", {
+  mensajes: [msg],
+});
+//-------------------------------------------------------------------------------------------------
+
 const handlebars = require("express-handlebars");
 
 app.use(express.static("./public"));
 app.use("/api/productos", routerApiProductos);
+app.use("/api/productos-test", routerVistaProductosTest);
 app.use("/", routerVistaProductos);
 
 app.engine(
@@ -31,13 +46,7 @@ app.set("views", "./views");
 
 // Mensajes
 
-const contenedorMensajes = new ContenedorBD({
-  client: "sqlite3",
-  connection: {
-    filename: "./DB/ecommerce.sqlite",
-  },
-  useNullAsDefault: true,
-}, 'mensajes');
+const contenedorMensajes = new ContenedorArchivo("./mensajes.txt");
 
 // Sockets
 
@@ -50,13 +59,38 @@ io.on("connection", (socket) => {
 
   (async function () {
     const mensajes = await contenedorMensajes.getAll();
+    const mensajesNormalizado = normalize(
+      { id: "mensajes", mensajes: mensajes },
+      msgs
+    );
+
+    const longitudMensajes = JSON.stringify(mensajes).length;
+    const longitudMensajesNormalizado =
+      JSON.stringify(mensajesNormalizado).length;
+
+    socket.emit("compresion", {
+      compresion: (longitudMensajesNormalizado * 100) / longitudMensajes,
+    });
     socket.emit("mensajes", mensajes);
   })();
 
   socket.on("mensajes", (data) => {
     (async function () {
+      console.log("recibo");
       await contenedorMensajes.save(data);
       const mensajes = await contenedorMensajes.getAll();
+      const mensajesNormalizado = normalize(
+        { id: "mensajes", mensajes: mensajes },
+        msgs
+      );
+
+      const longitudMensajes = JSON.stringify(mensajes).length;
+      const longitudMensajesNormalizado =
+        JSON.stringify(mensajesNormalizado).length;
+
+      io.sockets.emit("compresion", {
+        compresion: (longitudMensajesNormalizado * 100) / longitudMensajes,
+      });
       io.sockets.emit("mensajes", mensajes);
     })();
   });

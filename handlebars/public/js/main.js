@@ -41,12 +41,17 @@ socket.on("mensajes", (data) => {
   renderMensajes(data);
 });
 
+socket.on("compresion", (data) => {
+  console.log(data)
+  document.getElementById("compresion").innerHTML = Math.floor(data.compresion)
+});
+
 function renderMensajes(data) {
   const html = data
     .map((mensaje) => {
       return `<div>
-        <span class="email">${mensaje.email}</span> <span class="fecha">[${mensaje.fecha}]</span> : 
-        <em class="mensaje">${mensaje.text}</em> </div>`;
+        <span class="email">${mensaje.author.email}</span> <span class="fecha">[${mensaje.fecha}]</span> : 
+        <em class="mensaje">${mensaje.text}</em> <img class="avatar" src=${mensaje.author.avatar} alt=${mensaje.author.email}></div>`;
     })
     .join(" ");
   document.getElementById("mensajes").innerHTML = html;
@@ -56,8 +61,15 @@ function agregarMensaje(e) {
   const date = new Date().toLocaleString();
 
   const mensaje = {
-    email: document.getElementById("email").value,
-    text: document.getElementById("texto").value,
+    author: {
+      email: document.getElementById("email").value,
+      nombre: document.getElementById("nombre").value,
+      apellido: document.getElementById("apellido").value,
+      edad: document.getElementById("edad").value,
+      alias: document.getElementById("alias").value,
+      avatar: document.getElementById("avatar").value,
+    },
+    text: document.getElementById("text").value,
     fecha: date,
   };
 

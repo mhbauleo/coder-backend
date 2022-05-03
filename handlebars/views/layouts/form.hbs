@@ -30,14 +30,21 @@
 
   <div class="jumbotron contenedor mensajes">
     <h2>Centro de mensajes</h2>
+    <h3>Compresión</h3><span id="compresion"></span><span>%</span>
       <div id="mensajes"></div>
       <form onsubmit="return agregarMensaje(this)">
         <input type="email" id="email" placeholder="diego@outlook.com" required />
-        <input type="text" id="texto" placeholder="Ingrese un mensaje..." />
+        <input type="text" id="nombre" placeholder="nombre..." required />
+        <input type="text" id="apellido" placeholder="apellido..." required />
+        <input type="text" id="edad" placeholder="edad..." required />
+        <input type="text" id="alias" placeholder="alias..." required />
+        <input type="text" id="avatar" placeholder="avatar..." required />
+        <input type="text" id="text" placeholder="Ingrese un mensaje..." />
         <input type="submit" value="Enviar" />
       </form>
   </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
 <script src="js/main.js"></script>
