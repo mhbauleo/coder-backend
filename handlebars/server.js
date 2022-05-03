@@ -76,7 +76,6 @@ io.on("connection", (socket) => {
 
   socket.on("mensajes", (data) => {
     (async function () {
-      console.log("recibo");
       await contenedorMensajes.save(data);
       const mensajes = await contenedorMensajes.getAll();
       const mensajesNormalizado = normalize(
