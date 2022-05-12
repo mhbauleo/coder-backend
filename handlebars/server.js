@@ -2,9 +2,9 @@ const express = require("express");
 const { Server: HttpServer } = require("http");
 const { Server: IOServer } = require("socket.io");
 
-const routerApiProductos = require("./apiProductos");
-const routerVistaProductos = require("./vistaProductos");
-const routerVistaProductosTest = require("./productosTest");
+const routerApiProductos = require("./routes/apiProductos");
+const routerVistaProductosTest = require("./routes/productosTest");
+const routerLogin = require("./routes/login");
 
 const productos = require("./listaDeProductos");
 const ContenedorArchivo = require("./ContenedorArchivo");
@@ -29,9 +29,11 @@ const msgs = new schema.Entity("msgs", {
 const handlebars = require("express-handlebars");
 
 app.use(express.static("./public"));
+
 app.use("/api/productos", routerApiProductos);
 app.use("/api/productos-test", routerVistaProductosTest);
-app.use("/", routerVistaProductos);
+app.use("/", routerLogin)
+
 
 app.engine(
   "hbs",
@@ -48,7 +50,7 @@ app.set("views", "./views");
 
 const contenedorMensajes = new ContenedorArchivo("./mensajes.txt");
 
-// Sockets
+//------------------------------------- Sockets -------------------------------------------------
 
 io.on("connection", (socket) => {
   console.log("Nuevo cliente conectado!");
@@ -102,7 +104,7 @@ io.on("connection", (socket) => {
   });
 });
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 const PORT = 8080;
 
 httpServer.listen(PORT, () => {

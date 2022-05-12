@@ -1,4 +1,11 @@
 <div class="container mt-3">
+  <div id="bienvenida" class="jumbotron contenedor bienvenido">
+    <h1>Bienvenido {{nombre}}</h1>
+    <form action="/logout" method="GET">
+      <button class="btn btn-success">Desconectar</button>
+    </form>
+  </div>
+
   <div class="jumbotron contenedor productos">
     <h1 style="color: blue">Ingrese productos</h1>
     <br />
@@ -31,20 +38,21 @@
   <div class="jumbotron contenedor mensajes">
     <h2>Centro de mensajes</h2>
     <span>Compresión </span><span id="compresion"></span><span>%</span>
-      <div id="mensajes"></div>
-      <form onsubmit="return agregarMensaje(this)">
-        <input type="email" id="email" placeholder="diego@outlook.com" required />
-        <input type="text" id="nombre" placeholder="nombre..." required />
-        <input type="text" id="apellido" placeholder="apellido..." required />
-        <input type="text" id="edad" placeholder="edad..." required />
-        <input type="text" id="alias" placeholder="alias..." required />
-        <input type="text" id="avatar" placeholder="avatar..." required />
-        <input type="text" id="text" placeholder="Ingrese un mensaje..." />
-        <input type="submit" value="Enviar" />
-      </form>
+    <div id="mensajes"></div>
+    <form onsubmit="return agregarMensaje(this)">
+      <input type="email" id="email" placeholder="diego@outlook.com" required />
+      <input type="text" id="nombre" placeholder="nombre..." required />
+      <input type="text" id="apellido" placeholder="apellido..." required />
+      <input type="text" id="edad" placeholder="edad..." required />
+      <input type="text" id="alias" placeholder="alias..." required />
+      <input type="text" id="avatar" placeholder="avatar..." required />
+      <input type="text" id="text" placeholder="Ingrese un mensaje..." />
+      <input type="submit" value="Enviar" />
+    </form>
   </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
 <script src="js/main.js"></script>
+<script src="js/login.js"></script>
