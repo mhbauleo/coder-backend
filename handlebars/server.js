@@ -4,7 +4,7 @@ const { Server: IOServer } = require("socket.io");
 
 const routerApiProductos = require("./routes/apiProductos");
 const routerVistaProductosTest = require("./routes/productosTest");
-const routerLogin = require("./routes/login");
+const routerAutenticacion = require("./routes/autenticacion");
 
 const productos = require("./listaDeProductos");
 const ContenedorArchivo = require("./ContenedorArchivo");
@@ -32,8 +32,7 @@ app.use(express.static("./public"));
 
 app.use("/api/productos", routerApiProductos);
 app.use("/api/productos-test", routerVistaProductosTest);
-app.use("/", routerLogin)
-
+app.use("/", routerAutenticacion)
 
 app.engine(
   "hbs",

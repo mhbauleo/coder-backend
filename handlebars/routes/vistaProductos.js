@@ -5,7 +5,7 @@ router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
 router.get("/", (req, res) => {
-  res.render("layouts/form", {nombre : "Anónimo"});
+  res.render("layouts/form");
 });
 
 module.exports = router;
