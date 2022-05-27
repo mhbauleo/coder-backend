@@ -5,6 +5,7 @@ const { Server: IOServer } = require("socket.io");
 const routerApiProductos = require("./routes/apiProductos");
 const routerVistaProductosTest = require("./routes/productosTest");
 const routerAutenticacion = require("./routes/autenticacion");
+const routerInfo = require("./routes/info")
 
 const productos = require("./listaDeProductos");
 const ContenedorArchivo = require("./ContenedorArchivo");
@@ -32,6 +33,7 @@ app.use(express.static("./public"));
 
 app.use("/api/productos", routerApiProductos);
 app.use("/api/productos-test", routerVistaProductosTest);
+app.use("/info", routerInfo)
 app.use("/", routerAutenticacion)
 
 app.engine(
