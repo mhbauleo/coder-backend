@@ -6,6 +6,7 @@ const routerApiProductos = require("./routes/apiProductos");
 const routerVistaProductosTest = require("./routes/productosTest");
 const routerAutenticacion = require("./routes/autenticacion");
 const routerInfo = require("./routes/info")
+const routerRandoms = require("./routes/randoms")
 
 const productos = require("./listaDeProductos");
 const ContenedorArchivo = require("./ContenedorArchivo");
@@ -34,6 +35,7 @@ app.use(express.static("./public"));
 app.use("/api/productos", routerApiProductos);
 app.use("/api/productos-test", routerVistaProductosTest);
 app.use("/info", routerInfo)
+app.use("/api/randoms", routerRandoms)
 app.use("/", routerAutenticacion)
 
 app.engine(
