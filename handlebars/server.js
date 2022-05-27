@@ -104,8 +104,11 @@ io.on("connection", (socket) => {
 });
 
 // --------------------------------------------------------------------------------------------
-const PORT = 8080;
+const yargs = require('yargs/yargs')(process.argv.slice(2))
+const args = yargs.default({p : 8080}).argv
+
+const PORT = yargs.argv.p;
 
 httpServer.listen(PORT, () => {
-  console.log("Servidor levantado");
+  console.log("Servidor levantado en el puerto " + PORT);
 });

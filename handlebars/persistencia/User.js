@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const usuariosEsquema = require("./models/usuarios");
+const config = require('../config')
 
 mongoose.connect(
-  "mongodb+srv://mhbauleo:12345@cluster0.s1kle.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  config.mongo.baseUrl,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

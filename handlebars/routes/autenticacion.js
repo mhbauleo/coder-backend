@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
 const User = require("../persistencia/User");
+const config = require('../config')
 
 const router = express.Router();
 
@@ -21,8 +22,7 @@ router.use(cookieParser());
 router.use(
   session({
     store: MongoStore.create({
-      mongoUrl:
-        "mongodb+srv://mhbauleo:12345@cluster0.s1kle.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+      mongoUrl: config.mongo.baseUrl,
       mongoOptions: advancedOptions,
       ttl: 60,
     }),
@@ -76,7 +76,6 @@ passport.use(
 passport.use(
   "login",
   new LocalStrategy((username, password, done) => {
-    console.log("entro");
 
     User.findOne({"email" : username}, (err, user) => {
       if(err) {
