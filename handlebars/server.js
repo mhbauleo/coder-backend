@@ -13,6 +13,7 @@ const ContenedorArchivo = require("./ContenedorArchivo");
 const { optionsMariaDB } = require("./scripts/options/mariaDB.js");
 
 const app = express();
+const appRandom = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
@@ -35,7 +36,7 @@ app.use(express.static("./public"));
 app.use("/api/productos", routerApiProductos);
 app.use("/api/productos-test", routerVistaProductosTest);
 app.use("/info", routerInfo)
-app.use("/api/randoms", routerRandoms)
+appRandom.use("/api/randoms", routerRandoms)
 app.use("/", routerAutenticacion)
 
 app.engine(
@@ -108,11 +109,56 @@ io.on("connection", (socket) => {
 });
 
 // --------------------------------------------------------------------------------------------
+
+const cluster = require('cluster')
+const numCPUs = require('os').cpus().length;
 const yargs = require('yargs/yargs')(process.argv.slice(2))
-const args = yargs.default({p : 8080}).argv
+const args = yargs.default({p : 8080, m : 'fork', portRandom : 8086, n : true}).alias({p: 'port', m: 'modo', r: 'random'}).argv
 
 const PORT = yargs.argv.p;
+const PORTRANDOM = yargs.argv.portRandom;
+const modo = yargs.argv.m;
+const random = yargs.argv.r;
+const normal = yargs.argv.n;
 
-httpServer.listen(PORT, () => {
-  console.log("Servidor levantado en el puerto " + PORT);
-});
+/*
+p (puerto)
+m (modo)
+portRandom (puerto para /api/randoms)
+r (determina la disponibilidad de /api/randoms)
+n (determina la disponibilidad del resto de las rutas)
+*/
+
+console.log(`normal = ${normal}`)
+console.log(`random = ${random}`)
+
+if(normal) {
+  if(modo == 'cluster') {
+    if(cluster.isMaster) {
+      console.log(`Master ${process.pid} is running`)
+  
+      // Fork workers 
+      for(let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+      }
+  
+      cluster.on('exit', (worker, code, signal) => {
+        console.log(`worker ${worker.process.pid} died`)
+      })
+    } else {
+      httpServer.listen(PORT, () => {
+        console.log("Servidor levantado en el puerto " + PORT);
+      });
+    }
+  } else {
+    httpServer.listen(PORT, () => {
+      console.log("Servidor levantado en el puerto " + PORT);
+    });
+  }
+}
+
+if(random) {
+  appRandom.listen(PORTRANDOM, () => {
+    console.log(`Servidor random levantado en ${PORTRANDOM}`)
+  })
+}

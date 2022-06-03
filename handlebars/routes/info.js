@@ -1,5 +1,6 @@
 const express = require('express');
 const { route } = require('./autenticacion');
+const numCPUs = require('os').cpus().length;
 
 const router = express.Router()
 
@@ -13,7 +14,8 @@ router.get('/', (req, res) => {
         pid: process.pid,
         node_version: process.version,
         so: process.platform,
-        memoria_reservada: process.memoryUsage().rss
+        memoria_reservada: process.memoryUsage().rss,
+        numero_de_procesadores: numCPUs
     })
 })
 

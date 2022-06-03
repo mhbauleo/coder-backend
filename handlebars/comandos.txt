@@ -1,0 +1,20 @@
+levantar server en modo fork
+    nodemon server.js 
+
+levantar server en modo cluster
+    nodemon server.js -m cluster
+
+levantar server con forever
+    forever start server.js 
+
+levantar server con pm2 en modo fork
+    pm2 start server.js --name="Server1" --watch -- -p 8081
+
+levantar server con pm2 en modo cluster
+    pm2 start server.js --name="Server" --watch -i max -- -p 8082
+
+nginx
+    pm2 start server.js --name="server1" --watch -- --no-n -r --portRandom 8082
+    pm2 start server.js --name="server2" --watch -- --no-n -r --portRandom 8083
+    pm2 start server.js --name="server3" --watch -- --no-n -r --portRandom 8084
+    pm2 start server.js --name="server4" --watch -- --no-n -r --portRandom 8085
