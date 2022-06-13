@@ -1,4 +1,5 @@
 const fs = require("fs");
+const logger = require('./helpers/logger')
 
 class ContenedorArchivo {
   constructor(archivo) {
@@ -73,7 +74,7 @@ class ContenedorArchivo {
       const data = JSON.parse(contenido);
       return data;
     } catch (e) {
-      console.log("error de lectura");
+      logger.log("error", e);
     }
   }
 
@@ -81,7 +82,7 @@ class ContenedorArchivo {
     try {
       await fs.promises.writeFile(this.archivo, JSON.stringify(datos, null, 2));
     } catch (e) {
-      console.log("error de escritura");
+      logger.log("error", e);
     }
   }
 }

@@ -5,8 +5,8 @@ const { Server: IOServer } = require("socket.io");
 const routerApiProductos = require("./routes/apiProductos");
 const routerVistaProductosTest = require("./routes/productosTest");
 const routerAutenticacion = require("./routes/autenticacion");
-const routerInfo = require("./routes/info")
-const routerRandoms = require("./routes/randoms")
+const routerInfo = require("./routes/info");
+const routerRandoms = require("./routes/randoms");
 
 const productos = require("./listaDeProductos");
 const ContenedorArchivo = require("./ContenedorArchivo");
@@ -31,14 +31,6 @@ const msgs = new schema.Entity("msgs", {
 
 const handlebars = require("express-handlebars");
 
-app.use(express.static("./public"));
-
-app.use("/api/productos", routerApiProductos);
-app.use("/api/productos-test", routerVistaProductosTest);
-app.use("/info", routerInfo)
-appRandom.use("/api/randoms", routerRandoms)
-app.use("/", routerAutenticacion)
-
 app.engine(
   "hbs",
   handlebars({
@@ -49,6 +41,28 @@ app.engine(
 
 app.set("view engine", "hbs");
 app.set("views", "./views");
+
+app.use(express.static("./public"));
+
+//--------------------------------------------------------------------------------------------- 
+
+const logger = require('./helpers/logger')
+
+app.use(function (req, res, next) {
+  logger.log("info", `ruta ${req.path} método ${req.method}`);
+  next();
+});
+
+app.use("/api/productos", routerApiProductos);
+app.use("/api/productos-test", routerVistaProductosTest);
+app.use("/info", routerInfo);
+appRandom.use("/api/randoms", routerRandoms);
+app.use("/", routerAutenticacion);
+
+app.all(`*`, (req, res) => {
+  logger.log("warn", `ruta ${req.path} método ${req.method}`);
+  res.json({msg: 'ruta incorrecta'})
+});
 
 // Mensajes
 
@@ -110,10 +124,12 @@ io.on("connection", (socket) => {
 
 // --------------------------------------------------------------------------------------------
 
-const cluster = require('cluster')
-const numCPUs = require('os').cpus().length;
-const yargs = require('yargs/yargs')(process.argv.slice(2))
-const args = yargs.default({p : 8080, m : 'fork', portRandom : 8086, n : true}).alias({p: 'port', m: 'modo', r: 'random'}).argv
+const cluster = require("cluster");
+const numCPUs = require("os").cpus().length;
+const yargs = require("yargs/yargs")(process.argv.slice(2));
+const args = yargs
+  .default({ p: 8080, m: "fork", portRandom: 8086, n: true })
+  .alias({ p: "port", m: "modo", r: "random" }).argv;
 
 const PORT = yargs.argv.p;
 const PORTRANDOM = yargs.argv.portRandom;
@@ -129,27 +145,21 @@ r (determina la disponibilidad de /api/randoms)
 n (determina la disponibilidad del resto de las rutas)
 */
 
-console.log(`normal = ${normal}`)
-console.log(`random = ${random}`)
+console.log(`normal = ${normal}`);
+console.log(`random = ${random}`);
 
-if(normal) {
-  if(modo == 'cluster') {
-    if(cluster.isMaster) {
-      console.log(`Master ${process.pid} is running`)
-  
-      // Fork workers 
-      for(let i = 0; i < numCPUs; i++) {
-        cluster.fork();
-      }
-  
-      cluster.on('exit', (worker, code, signal) => {
-        console.log(`worker ${worker.process.pid} died`)
-      })
-    } else {
-      httpServer.listen(PORT, () => {
-        console.log("Servidor levantado en el puerto " + PORT);
-      });
+if (normal) {
+  if (modo == "cluster" && cluster.isMaster) {
+    console.log(`Master ${process.pid} is running`);
+
+    // Fork workers
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork();
     }
+
+    cluster.on("exit", (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died`);
+    });
   } else {
     httpServer.listen(PORT, () => {
       console.log("Servidor levantado en el puerto " + PORT);
@@ -157,8 +167,8 @@ if(normal) {
   }
 }
 
-if(random) {
+if (random) {
   appRandom.listen(PORTRANDOM, () => {
-    console.log(`Servidor random levantado en ${PORTRANDOM}`)
-  })
+    console.log(`Servidor random levantado en ${PORTRANDOM}`);
+  });
 }

@@ -1,44 +1,77 @@
+const logger = require("./helpers/logger");
+
 class ContenedorBD {
   constructor(options, tabla) {
-    this.knex = require('knex')(options);
+    this.knex = require("knex")(options);
     this.tabla = tabla;
   }
 
   // Principales
 
   async save(objeto) {
-    const newTimestamp = Date.now()
-    const [nuevoId] = await this.knex(this.tabla).insert({...objeto})
-    return nuevoId;
+    try {
+      const newTimestamp = Date.now();
+      const [nuevoId] = await this.knex(this.tabla).insert({ ...objeto });
+      return nuevoId;
+    } catch (e) {
+      logger.log("error", e);
+    }
   }
 
   // Devuelve null en caso de no encontrar el objeto
   async getById(idBuscado) {
-    let [usuario] = await this.knex.from(this.tabla).select("*").where('id', idBuscado)
-    if(usuario == undefined) {
-        return null
+    try {
+      let [usuario] = await this.knex
+        .from(this.tabla)
+        .select("*")
+        .where("id", idBuscado);
+      if (usuario == undefined) {
+        return null;
+      }
+      return usuario;
+    } catch (e) {
+      logger.log("error", e);
     }
-    return usuario
   }
 
   async getAll() {
-    return await this.knex.from(this.tabla).select('*')
+    try {
+      return await this.knex.from(this.tabla).select("*");
+    } catch (e) {
+      logger.log("error", e);
+    }
   }
 
   async updateById(newObject, id) {
-    return await this.knex.from(this.tabla).where('id', id).update(newObject)
+    try {
+      return await this.knex.from(this.tabla).where("id", id).update(newObject);
+    } catch (e) {
+      logger.log("error", e);
+    }
   }
 
   async deleteById(id) {
-    return await this.knex(this.tabla).where('id', id).delete()
+    try {
+      return await this.knex(this.tabla).where("id", id).delete();
+    } catch (e) {
+      logger.log("error", e);
+    }
   }
 
   async deleteAll() {
-    return await this.knew(this.tabla).delete()
+    try {
+      return await this.knew(this.tabla).delete();
+    } catch (e) {
+      logger.log("error", e);
+    }
   }
 
   async destroy() {
-    this.knex.destroy()
+    try {
+      this.knex.destroy();
+    } catch (e) {
+      logger.log("error", e);
+    }
   }
 }
 

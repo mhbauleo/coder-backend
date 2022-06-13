@@ -1,0 +1,24 @@
+Con console.log
+
+[Summary]:
+   ticks  total  nonlib   name
+    358    6.2%   19.5%  JavaScript
+   1464   25.4%   79.9%  C++
+    365    6.3%   19.9%  GC
+   3926   68.2%          Shared libraries
+     10    0.2%          Unaccounted
+
+
+Sin console.log
+
+[Summary]:
+   ticks  total  nonlib   name
+    228    6.0%   33.9%  JavaScript
+    440   11.5%   65.5%  C++
+    183    4.8%   27.2%  GC
+   3147   82.4%          Shared libraries
+      4    0.1%          Unaccounted
+
+Conclusión
+
+Se puede observar que algo tan simple como un console.log puede alterar significativamente la performance del servidor.  Por lo que resulta importante no incluir estos console.log cuando se pasa a la etapa de producción.
