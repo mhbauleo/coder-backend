@@ -131,7 +131,7 @@ const args = yargs
   .default({ p: 8080, m: "fork", portRandom: 8086, n: true })
   .alias({ p: "port", m: "modo", r: "random" }).argv;
 
-const PORT = yargs.argv.p;
+const PORT = process.env.PORT || yargs.argv.p;
 const PORTRANDOM = yargs.argv.portRandom;
 const modo = yargs.argv.m;
 const random = yargs.argv.r;
