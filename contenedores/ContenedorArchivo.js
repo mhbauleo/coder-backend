@@ -1,5 +1,5 @@
 const fs = require("fs");
-const logger = require('./helpers/logger')
+const logger = require('../helpers/logger')
 
 class ContenedorArchivo {
   constructor(archivo) {

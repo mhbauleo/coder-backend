@@ -6,8 +6,8 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
-const User = require("../persistencia/User");
-const config = require('../config')
+const { User } = require("../daos/index");
+const config = require("../config");
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.use(
     store: MongoStore.create({
       mongoUrl: config.mongo.baseUrl,
       mongoOptions: advancedOptions,
-      ttl: 60,
+      ttl: 600,
     }),
     secret: "secreto",
     resave: true,
@@ -41,12 +41,9 @@ passport.use(
   "register",
   new LocalStrategy(
     { passReqToCallback: true },
-    (req, username, password, done) => {
-      User.findOne({ email: username }, (err, user) => {
-        if (err) {
-          console.log(err);
-          return done(err);
-        }
+    async (req, username, password, done) => {
+      try {
+        const user = await User.getUserByEmail(username);
 
         if (user) {
           console.log("User already exists");
@@ -59,41 +56,39 @@ passport.use(
           password: createHash(password),
         };
 
-        User.create(newUser, (err, userWithId) => {
-          if (err) {
-            console.log(err);
-            return done(err);
-          }
-          console.log(userWithId);
-          console.log("User Registration successful");
-          return done(null, userWithId);
-        });
-      });
+        console.log(typeof newUser.password);
+        console.log(newUser);
+        const id = await User.save(newUser);
+        console.log(id);
+        console.log("User Registration successful");
+        const createdUser = await User.getById(id);
+        return done(null, createdUser);
+      } catch (e) {
+        console.log(e);
+        return done(e);
+      }
     }
   )
 );
 
 passport.use(
   "login",
-  new LocalStrategy((username, password, done) => {
-
-    User.findOne({"email" : username}, (err, user) => {
-      if(err) {
-        return done(err)
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.getUserByEmail(username);
+      console.log(user);
+      if (!user) {
+        console.log(`User no found with username ${username}`);
+        return done(null, false);
       }
-
-      if(!user) {
-        console.log(`User no found with username ${username}`)
-        return done(null, false)
+      if (!isValidPassword(user, password)) {
+        console.log("Invalid password");
+        return done(null, false);
       }
-
-      if(!isValidPassword(user, password)) {
-        console.log("Invalid password")
-        return done(null, false)
-      }
-
-      return done(null, user)
-    })
+      return done(null, user);
+    } catch (e) {
+      return done(e);
+    }
   })
 );
 
@@ -101,8 +96,8 @@ passport.serializeUser((user, done) => {
   done(null, user._id);
 });
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, done)
+passport.deserializeUser(async (id, done) => {
+  done(null, await User.getById(id));
 });
 
 /*----------------------- Rutas ----------*/
@@ -117,8 +112,8 @@ router.post(
     failureRedirect: "/register-error",
   }),
   (req, res) => {
-    req.logOut()
-    res.redirect("/login")
+    req.logOut();
+    res.redirect("/login");
   }
 );
 
@@ -128,7 +123,7 @@ router.get("/register-error", (req, res) => {
 
 router.get("/login", (req, res) => {
   if (req.isAuthenticated()) {
-    res.render("layouts/form", { nombre: req.user.nombre });
+    res.render("layouts/form", { nombre: req.user?.nombre });
   } else {
     res.render("layouts/login");
   }

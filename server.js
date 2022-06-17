@@ -8,10 +8,6 @@ const routerAutenticacion = require("./routes/autenticacion");
 const routerInfo = require("./routes/info");
 const routerRandoms = require("./routes/randoms");
 
-const productos = require("./listaDeProductos");
-const ContenedorArchivo = require("./ContenedorArchivo");
-const { optionsMariaDB } = require("./scripts/options/mariaDB.js");
-
 const app = express();
 const appRandom = express();
 const httpServer = new HttpServer(app);
@@ -66,7 +62,8 @@ app.all(`*`, (req, res) => {
 
 // Mensajes
 
-const contenedorMensajes = new ContenedorArchivo("./mensajes.txt");
+const {productos, mensajes} = require("./daos/index");
+
 
 //------------------------------------- Sockets -------------------------------------------------
 
@@ -74,50 +71,50 @@ io.on("connection", (socket) => {
   console.log("Nuevo cliente conectado!");
 
   (async function () {
-    socket.emit("productos", await productos.getProductos());
+    socket.emit("productos", await productos.getAll());
   })();
 
   (async function () {
-    const mensajes = await contenedorMensajes.getAll();
+    const mensajesTodos = await mensajes.getAll();
     const mensajesNormalizado = normalize(
-      { id: "mensajes", mensajes: mensajes },
+      { id: "mensajes", mensajes: mensajesTodos },
       msgs
     );
 
-    const longitudMensajes = JSON.stringify(mensajes).length;
+    const longitudMensajes = JSON.stringify(mensajesTodos).length;
     const longitudMensajesNormalizado =
       JSON.stringify(mensajesNormalizado).length;
 
     socket.emit("compresion", {
       compresion: (longitudMensajesNormalizado * 100) / longitudMensajes,
     });
-    socket.emit("mensajes", mensajes);
+    socket.emit("mensajes", mensajesTodos);
   })();
 
   socket.on("mensajes", (data) => {
     (async function () {
-      await contenedorMensajes.save(data);
-      const mensajes = await contenedorMensajes.getAll();
+      await mensajes.save(data);
+      const mensajesTodos = await mensajes.getAll();
       const mensajesNormalizado = normalize(
-        { id: "mensajes", mensajes: mensajes },
+        { id: "mensajes", mensajes: mensajesTodos },
         msgs
       );
 
-      const longitudMensajes = JSON.stringify(mensajes).length;
+      const longitudMensajes = JSON.stringify(mensajesTodos).length;
       const longitudMensajesNormalizado =
         JSON.stringify(mensajesNormalizado).length;
 
       io.sockets.emit("compresion", {
         compresion: (longitudMensajesNormalizado * 100) / longitudMensajes,
       });
-      io.sockets.emit("mensajes", mensajes);
+      io.sockets.emit("mensajes", mensajesTodos);
     })();
   });
 
   socket.on("productos", (data) => {
     (async function () {
-      await productos.postProducto(data);
-      io.sockets.emit("productos", await productos.getProductos());
+      await productos.save(data);
+      io.sockets.emit("productos", await productos.getAll());
     })();
   });
 });
