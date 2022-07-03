@@ -2,7 +2,7 @@ const ContenedorMongoDb = require('../contenedores/ContenedorMongoDb')
 const usuariosEsquema = require('../schemas/usuarios')
 const logger = require('../helpers/logger')
 
-class MensajesDao extends ContenedorMongoDb {
+class UserDao extends ContenedorMongoDb {
     constructor() {
         super('usuarios', usuariosEsquema)
     }
@@ -16,4 +16,4 @@ class MensajesDao extends ContenedorMongoDb {
     }
 }
 
-module.exports = MensajesDao
+module.exports = UserDao

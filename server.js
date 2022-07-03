@@ -1,28 +1,18 @@
 const express = require("express");
 const { Server: HttpServer } = require("http");
 const { Server: IOServer } = require("socket.io");
+const {productos, mensajes} = require("./daos/index");
 
-const routerApiProductos = require("./routes/apiProductos");
-const routerVistaProductosTest = require("./routes/productosTest");
-const routerAutenticacion = require("./routes/autenticacion");
-const routerInfo = require("./routes/info");
+const routerMain = require('./routes/main')
 const routerRandoms = require("./routes/randoms");
+
+const {logPath, rutaIncorrecta} = require('./middlewares/logger')
 
 const app = express();
 const appRandom = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
-//------------------------------------- Normalizr -------------------------------------------------
-const { normalize, schema, denormalize } = require("normalizr");
-
-const author = new schema.Entity("author", { idAttribute: "email" });
-const msg = new schema.Entity("msg", {
-  author: author,
-});
-const msgs = new schema.Entity("msgs", {
-  mensajes: [msg],
-});
 //-------------------------------------------------------------------------------------------------
 
 const handlebars = require("express-handlebars");
@@ -42,30 +32,26 @@ app.use(express.static("./public"));
 
 //--------------------------------------------------------------------------------------------- 
 
-const logger = require('./helpers/logger')
+app.use(logPath);
 
-app.use(function (req, res, next) {
-  logger.log("info", `ruta ${req.path} método ${req.method}`);
-  next();
-});
-
-app.use("/api/productos", routerApiProductos);
-app.use("/api/productos-test", routerVistaProductosTest);
-app.use("/info", routerInfo);
+app.use("/", routerMain);
 appRandom.use("/api/randoms", routerRandoms);
-app.use("/", routerAutenticacion);
 
-app.all(`*`, (req, res) => {
-  logger.log("warn", `ruta ${req.path} método ${req.method}`);
-  res.json({msg: 'ruta incorrecta'})
+app.all(`*`, rutaIncorrecta);
+
+//------------------------------------- Normalizer -------------------------------------
+
+const { normalize, schema } = require("normalizr");
+
+const author = new schema.Entity("author", { idAttribute: "email" });
+const msg = new schema.Entity("msg", {
+  author: author,
+});
+const msgs = new schema.Entity("msgs", {
+  mensajes: [msg],
 });
 
-// Mensajes
-
-const {productos, mensajes} = require("./daos/index");
-
-
-//------------------------------------- Sockets -------------------------------------------------
+//------------------------------------- Sockets -------------------------------------
 
 io.on("connection", (socket) => {
   console.log("Nuevo cliente conectado!");
