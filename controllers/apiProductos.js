@@ -1,4 +1,4 @@
-const { productos } = require("../daos/index");
+const { productos } = require("../model/daos/index");
 
 const getAllProductos = async (req, res) => {
   res.json(await productos.getAll());

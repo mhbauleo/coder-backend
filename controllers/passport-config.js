@@ -1,6 +1,6 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const { User } = require("../daos/index");
+const { User } = require("../model/daos/index");
 const {createHash, isValidPassword} = require('../helpers/password')
 
 

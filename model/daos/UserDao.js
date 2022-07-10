@@ -1,10 +1,16 @@
 const ContenedorMongoDb = require('../contenedores/ContenedorMongoDb')
 const usuariosEsquema = require('../schemas/usuarios')
-const logger = require('../helpers/logger')
+const logger = require('../../helpers/logger')
 
-class UserDao extends ContenedorMongoDb {
+let instance = null
+
+class UserMongoDao extends ContenedorMongoDb {
     constructor() {
-        super('usuarios', usuariosEsquema)
+        if(!instance) {
+            super('usuarios', usuariosEsquema)
+            instance = this
+        }
+        return instance
     }
 
     async getUserByEmail(email) {
@@ -16,4 +22,4 @@ class UserDao extends ContenedorMongoDb {
     }
 }
 
-module.exports = UserDao
+module.exports = UserMongoDao

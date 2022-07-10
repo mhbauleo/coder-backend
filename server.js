@@ -1,7 +1,7 @@
 const express = require("express");
 const { Server: HttpServer } = require("http");
 const { Server: IOServer } = require("socket.io");
-const {productos, mensajes} = require("./daos/index");
+const {productos, mensajes} = require("./model/daos/index");
 
 const routerMain = require('./routes/main')
 const routerRandoms = require("./routes/randoms");
