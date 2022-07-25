@@ -1,51 +1,44 @@
 const { productos } = require("../model/daos/index");
 
-const getAllProductos = async (req, res) => {
-  res.json(await productos.getAll());
-};
+async function getProductos() {
+  return await productos.getAll()
+}
 
-const getProductById = async (req, res) => {
-  const producto = await productos.getById(req.params.id);
+const getProductById = async ({id}) => {
+  const producto = await productos.getById(id);
   if (producto != null) {
-    res.json(producto);
+    return producto
   } else {
-    res.json({ error: "Producto no encontrado" });
+    return { error: "Producto no encontrado" }
   }
 };
 
-const saveProduct = async (req, res) => {
-  const nuevoProducto = req.body;
-  const nuevoId = await productos.save(nuevoProducto);
+const saveProduct = async ({datos}) => {
+  return await productos.save(datos)
+}
 
-  if (nuevoId != 0) {
-    res.json({ nuevoProducto, nuevoId });
-  } else {
-    res.json({ error: "Producto inválido" });
-  }
-};
-
-const updateProductById = async (req, res) => {
-  const nuevoProducto = req.body;
+const updateProductById = async ({datos, id}) => {
+  const nuevoProducto = datos;
 
   if (
-    (await productos.updateById(nuevoProducto, req.params.id)) !== 0
+    (await productos.updateById(nuevoProducto, id)) !== 0
   ) {
-    res.json({ mensaje: "Actualizado con éxito" });
+    return "Actualizado con éxito";
   } else {
-    res.json({ error: "No se pudo actualizar" });
+    return "No se pudo actualizar";
   }
 };
 
-const deleteProductById = async (req, res) => {
-  if ((await productos.deleteById(req.params.id)) !== 0) {
-    res.json({ mensaje: "Borrado con éxito" });
+const deleteProductById = async ({id}) => {
+  if ((await productos.deleteById(id)) !== 0) {
+    return "Borrado con éxito" ;
   } else {
-    res.json({ error: "Producto no encontrado" });
+    return "Producto no encontrado" ;
   }
 };
 
 module.exports = {
-  getAllProductos,
+  getProductos,
   getProductById,
   saveProduct,
   updateProductById,
